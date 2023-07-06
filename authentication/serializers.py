@@ -50,9 +50,7 @@ class LoginSerializer(serializers.Serializer):
 
         if username and password:
             user = User.objects.filter(username=username, password=password).first()
-            print(user)
-            print(authenticate(self.context.get("request"), username=username, password=password))
-            # print(login(self.context.get('request'), user))
+            authenticate(self.context.get("request"), username=username, password=password)
             if not user:
                 msg = 'Access denied: wrong username or password.'
                 raise serializers.ValidationError(msg, code='authorization')

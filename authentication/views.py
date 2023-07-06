@@ -35,5 +35,6 @@ class LoginView(generics.GenericAPIView):
         serializer = self.serializer_class(data=self.request.data, context={ 'request': self.request })
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        # print(login(request, user))
+        print(login(request, user))
+        print("is auth:", self.request.user.is_authenticated)
         return Response(None, status.HTTP_202_ACCEPTED)
