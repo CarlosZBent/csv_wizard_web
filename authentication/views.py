@@ -18,9 +18,12 @@ class UserCreateView(generics.GenericAPIView):
 
         try:
             if serializer.is_valid():
-                serializer.save()
-                print('>>> SERIALIZER IS VALID')
-                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+                user = User.objects.create_user(**serializer.validate(self.request.data))
+                return Response(data={
+                    "username": self.request.data.get("username"), 
+                    "email":self.request.data.get("email")
+                    }, 
+                    status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={ "error":str(e) }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -35,6 +38,6 @@ class LoginView(generics.GenericAPIView):
         serializer = self.serializer_class(data=self.request.data, context={ 'request': self.request })
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        print(login(request, user))
+        print("login:", login(request, user))
         print("is auth:", self.request.user.is_authenticated)
         return Response(None, status.HTTP_202_ACCEPTED)

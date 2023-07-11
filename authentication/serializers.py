@@ -19,7 +19,6 @@ class UserCreationSerializer(serializers.ModelSerializer):
         ]
 
         def validate(self, attrs):
-            print(">>> VALIDATE()")
             username_exists = User.objects.filter(username=attrs.get('username')).exists()
 
             if username_exists:
@@ -34,7 +33,7 @@ class UserCreationSerializer(serializers.ModelSerializer):
 
 
             return super().validate(attrs)
-
+            
 
 class LoginSerializer(serializers.Serializer):
 
@@ -42,15 +41,14 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(label="Password", style={'input_type': 'password'}, trim_whitespace=False, write_only=True)
 
     def validate(self, attrs):
-        print(">>> VALIDATE login")
         username = attrs.get('username')
-        print(username)
         password = attrs.get('password')
-        print(password)
 
         if username and password:
-            user = User.objects.filter(username=username, password=password).first()
-            authenticate(self.context.get("request"), username=username, password=password)
+            user = User.objects.filter(username=username).first()
+            print("user:", user)
+            print("authenticate:", authenticate(self.context.get("request"), username=username, password=password))
+            
             if not user:
                 msg = 'Access denied: wrong username or password.'
                 raise serializers.ValidationError(msg, code='authorization')
