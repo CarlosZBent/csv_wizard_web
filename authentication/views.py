@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from .models import User
 from . import serializers
 
@@ -41,3 +41,10 @@ class LoginView(generics.GenericAPIView):
         print("login:", login(request, user))
         print("is auth:", self.request.user.is_authenticated)
         return Response(None, status.HTTP_202_ACCEPTED)
+
+
+class LogoutView(generics.GenericAPIView):
+
+    def get(self, request):
+        logout(self.request)
+        return Response(status=status.HTTP_200_OK)
