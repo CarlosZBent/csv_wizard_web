@@ -28,6 +28,36 @@ class UserCreateView(generics.GenericAPIView):
             return Response(data={ "error":str(e) }, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class UserUpdateView(generics.GenericAPIView):
+
+    serializer_class = serializers.UserUpdateSerializer
+
+
+    def put(self, request):
+        print(self.request.data)
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            authenticated_user = request.user
+            user = User.objects.filter(email=authenticated_user.email).first()
+            print(user)
+            user.email = self.request.data.get("email")
+            user.username = self.request.data.get("username")
+            user.save()
+            authenticate(
+                request = self.request,
+                username = self.request.data.get("username"),
+                password = user.password
+                )
+            login(self.request, user)
+            return Response(data={
+                "username": self.request.data.get("username"), 
+                "email":self.request.data.get("email")
+                },
+                status=status.HTTP_202_ACCEPTED)
+
+
 class LoginView(generics.GenericAPIView):
 
     serializer_class = serializers.LoginSerializer

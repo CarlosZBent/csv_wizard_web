@@ -33,6 +33,20 @@ class UserCreationSerializer(serializers.ModelSerializer):
 
 
             return super().validate(attrs)
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=25)
+    email = serializers.EmailField(max_length=80)
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+        ]
+
+        def validate(self, attrs):
+            return super().validate(attrs)
             
 
 class LoginSerializer(serializers.Serializer):
