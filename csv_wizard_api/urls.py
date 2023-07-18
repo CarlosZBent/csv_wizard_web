@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views as generic_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls')),
-    path('files/', include('file_handling.urls'))
+    path('files/', include('file_handling.urls')),
+    path('users/<email>', generic_views.UserDetailsView.as_view(), name="user_detail_view" )
 ]
