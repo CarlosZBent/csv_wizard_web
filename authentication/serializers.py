@@ -49,6 +49,19 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             return super().validate(attrs)
             
 
+class UserPasswordUpdateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(min_length=8)
+
+    class Meta:
+        model = User
+        fields = [
+            'password'
+        ]
+
+        def validate(self, attrs):
+            return super().validate(attrs)
+
+
 class LoginSerializer(serializers.Serializer):
 
     username = serializers.CharField(label="Username", write_only=True)

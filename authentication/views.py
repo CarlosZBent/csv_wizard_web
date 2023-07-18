@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.hashers import make_password
 from .models import User
 from . import serializers
 
@@ -35,13 +36,11 @@ class UserUpdateView(generics.GenericAPIView):
 
 
     def put(self, request):
-        print(self.request.data)
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             authenticated_user = request.user
             user = User.objects.filter(email=authenticated_user.email).first()
-            print(user)
             user.email = self.request.data.get("email")
             user.username = self.request.data.get("username")
             user.save()
@@ -56,6 +55,23 @@ class UserUpdateView(generics.GenericAPIView):
                 "email":self.request.data.get("email")
                 },
                 status=status.HTTP_202_ACCEPTED)
+
+
+class UserPasswordUpdateView(generics.GenericAPIView):
+
+    serializer_class = serializers.UserPasswordUpdateSerializer
+
+    def put(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        new_password = self.request.data.get("password")
+        
+        authenticated_user = request.user
+        user = User.objects.filter(username=authenticated_user.username, email=authenticated_user.email).first()
+        user.password = make_password(new_password)
+        user.save()
+        logout(self.request)
+        return Response(data={"password_updated":user.username}, status=status.HTTP_202_ACCEPTED)
 
 
 class LoginView(generics.GenericAPIView):
