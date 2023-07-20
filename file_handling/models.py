@@ -6,7 +6,7 @@ User = get_user_model()
 
 class File(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    size = models.CharField(max_length=50)
+    size = models.FloatField()
     name = models.CharField(max_length=250)
     is_deleted = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
