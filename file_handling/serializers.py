@@ -6,11 +6,11 @@ from rest_framework.validators import ValidationError
 class FileSerializer(serializers.ModelSerializer):
 
     name = serializers.CharField(max_length=250)
-    size = serializers.FloatField()
+    size = serializers.FloatField(required=True)
     file1_contents = serializers.FileField(write_only=True, required=True)
     file2_contents = serializers.FileField(write_only=True, required=False)
     operation_name = serializers.CharField(max_length=15)
-    number_of_parts = serializers.IntegerField()
+    number_of_parts = serializers.IntegerField(required=False)
 
     class Meta:
         model = File
