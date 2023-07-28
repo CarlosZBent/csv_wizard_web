@@ -5,6 +5,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.hashers import make_password
 from .models import User
 from . import serializers
+import os
 
 
 class UserCreateView(generics.GenericAPIView):
@@ -17,16 +18,21 @@ class UserCreateView(generics.GenericAPIView):
 
         serializer = self.serializer_class(data=request.data)
 
-        try:
-            if serializer.is_valid():
-                user = User.objects.create_user(**serializer.validate(self.request.data))
-                return Response(data={
-                    "username": self.request.data.get("username"), 
-                    "email":self.request.data.get("email")
-                    }, 
-                    status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response(data={ "error":str(e) }, status=status.HTTP_400_BAD_REQUEST)
+    
+        if serializer.is_valid():
+            user = User.objects.create_user(
+                username=self.request.data.get('username'),
+                email=self.request.data.get('email'),
+                password=make_password(self.request.data.get('password'))
+                )
+            os.mkdir(f"./files/{self.request.data.get('username')}")
+            return Response(data={
+                "username": self.request.data.get("username"), 
+                "email":self.request.data.get("email")
+                },
+                status=status.HTTP_201_CREATED)
+        else:
+            return Response(data={ "error":serializer.errors }, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -39,10 +45,16 @@ class UserUpdateView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
+
+            new_email = self.request.data.get("email")
+            new_username = self.request.data.get("username")
+
             authenticated_user = request.user
             user = User.objects.filter(email=authenticated_user.email).first()
-            user.email = self.request.data.get("email")
-            user.username = self.request.data.get("username")
+            if new_email:
+                user.email = new_email
+            if new_username:
+                user.username = new_username 
             user.save()
             authenticate(
                 request = self.request,
@@ -50,9 +62,13 @@ class UserUpdateView(generics.GenericAPIView):
                 password = user.password
                 )
             login(self.request, user)
+            try:
+                os.mkdir(f"./files/{self.request.data.get('username')}")
+            except FileExistsError:
+                pass
             return Response(data={
-                "username": self.request.data.get("username"), 
-                "email":self.request.data.get("email")
+                "username": user.username, 
+                "email":user.email
                 },
                 status=status.HTTP_202_ACCEPTED)
 

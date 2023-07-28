@@ -41,11 +41,29 @@ class FilesView(generics.GenericAPIView):
 
             file_entry = File.objects.create(
                 user=request.user,
-                size=request.data.get("size"),
-                name=request.data.get("name"),
+                size=request.data.get("file1_contents").size,
+                name=request.data.get("file1_contents").name,
                 is_deleted=False,
             )
             file_entry.save()
+            
+            if request.data.get('file2_contents'):
+                file_entry2 = File.objects.create(
+                    user=request.user,
+                    size=request.data.get("file2_contents").size,
+                    name=request.data.get("file2_contents").name,
+                    is_deleted=False,
+                )
+                file_entry2.save()
+            
+            with open(f"./files/{request.user.username}/{request.data.get('file1_contents').name[:-4]}-{request.user.username}.csv", "wb") as file:
+                for chunk in request.data.get("file1_contents").chunks():
+                    file.write(chunk)
+            if request.data.get('file2_contents'):
+                with open(f"./files/{request.user.username}/{request.data.get('file2_contents').name[:-4]}-{request.user.username}.csv", "wb") as file:
+                    for chunk in request.data.get("file2_contents").chunks():
+                        file.write(chunk)
+
             return Response(status=status.HTTP_201_CREATED)
         else:
             print("invalid: ", serializer.errors)

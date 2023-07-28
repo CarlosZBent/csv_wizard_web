@@ -35,8 +35,8 @@ class UserCreationSerializer(serializers.ModelSerializer):
             return super().validate(attrs)
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=25)
-    email = serializers.EmailField(max_length=80)
+    username = serializers.CharField(max_length=25, required=False)
+    email = serializers.EmailField(max_length=80, required=False)
 
     class Meta:
         model = User
