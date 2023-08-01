@@ -1,7 +1,10 @@
 from django.shortcuts import render
+from django.http import FileResponse
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
+from csv_wizard import CSVWizard, CURRENT_PARENT_DIR
+import os
 from . import serializers
 from .models import File
 
@@ -46,6 +49,10 @@ class FilesView(generics.GenericAPIView):
                 is_deleted=False,
             )
             file_entry.save()
+            try:
+                os.mkdir(f"./results_files/{request.user.username}/")
+            except FileExistsError:
+                pass
             
             if request.data.get('file2_contents'):
                 file_entry2 = File.objects.create(
@@ -63,6 +70,41 @@ class FilesView(generics.GenericAPIView):
                 with open(f"./files/{request.user.username}/{request.data.get('file2_contents').name[:-4]}-{request.user.username}.csv", "wb") as file:
                     for chunk in request.data.get("file2_contents").chunks():
                         file.write(chunk)
+
+            operation = request.data.get("operation_name")
+            user_results_files_folder_path = f"./results_files/{request.user.username}/"
+            file1_filesystem_name = f"{request.data.get('file1_contents').name[:-4]}-{request.user.username}"
+            if request.data.get('file2_contents'):
+                file2_filesystem_name = f"{request.data.get('file2_contents').name[:-4]}-{request.user.username}"
+
+            # process CSV files
+            if request.data.get("file1_contents") and not request.data.get("file2_contents"):
+            # only file 1 exists
+
+                file1 = CSVWizard(file1_filesystem_name, f"./files/{request.user.username}")
+                file1_encoding = file1.get_encoding()
+                
+                if operation == "slice":
+                    try:
+                        os.mkdir(f"{user_results_files_folder_path}/slice/")
+                    except FileExistsError:
+                        pass
+                    
+                    result = file1.slice()
+                    
+                    first_half = CSVWizard(f"{file1_filesystem_name}_FIRST_HALF", f"{user_results_files_folder_path}/slice")
+                    second_half = CSVWizard(f"{file1_filesystem_name}_SECOND_HALF", f"{user_results_files_folder_path}/slice")
+                    
+                    first_half.overwrite(result['First_Half'], file1_encoding)
+                    second_half.overwrite(result['Second_Half'], file1_encoding)
+
+                    first_half_file = open(f"{user_results_files_folder_path}/slice/{file1_filesystem_name}_FIRST_HALF.csv", "r")
+                    first_half_file_instance = FileResponse(first_half_file, filename=f"{file1_filesystem_name}_FIRST_HALF")
+
+                    # return Response(data={"first_half": first_half_file_instance, "encoding":file1_encoding}, status=status.HTTP_200_OK, content_type="file/csv")
+            else:
+            # there are two files
+                pass
 
             return Response(status=status.HTTP_201_CREATED)
         else:
