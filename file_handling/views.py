@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import FileResponse
+from django.http import HttpResponse
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
@@ -12,9 +12,9 @@ from .models import File
 available_operations = [
     "slice",
     "divide",
+    "delete_blanks"
     "find_common_rows",
     "find_different_rows",
-    "get_duplicates"
 ]
 
 class FilesView(generics.GenericAPIView):
@@ -90,18 +90,39 @@ class FilesView(generics.GenericAPIView):
                     except FileExistsError:
                         pass
                     
-                    result = file1.slice()
-                    
-                    first_half = CSVWizard(f"{file1_filesystem_name}_FIRST_HALF", f"{user_results_files_folder_path}/slice")
-                    second_half = CSVWizard(f"{file1_filesystem_name}_SECOND_HALF", f"{user_results_files_folder_path}/slice")
-                    
-                    first_half.overwrite(result['First_Half'], file1_encoding)
-                    second_half.overwrite(result['Second_Half'], file1_encoding)
+                    try:
+                        result = file1.slice()
+                        
+                        first_half = CSVWizard(f"{file1_filesystem_name}_FIRST_HALF", f"{user_results_files_folder_path}/slice")
+                        second_half = CSVWizard(f"{file1_filesystem_name}_SECOND_HALF", f"{user_results_files_folder_path}/slice")
+                        
+                        first_half.overwrite(result['First_Half'], file1_encoding)
+                        second_half.overwrite(result['Second_Half'], file1_encoding)
 
-                    first_half_file = open(f"{user_results_files_folder_path}/slice/{file1_filesystem_name}_FIRST_HALF.csv", "r")
-                    first_half_file_instance = FileResponse(first_half_file, filename=f"{file1_filesystem_name}_FIRST_HALF")
+                        return Response(data={"download_links": "DUMMY_LINK"}, status=status.HTTP_200_OK)
+                    except Exception as e:
+                        return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-                    # return Response(data={"first_half": first_half_file_instance, "encoding":file1_encoding}, status=status.HTTP_200_OK, content_type="file/csv")
+                elif operation == "divide":
+
+                    number_of_parts = int(request.data.get('number_of_parts'))
+                    
+                    try:
+                        os.mkdir(f"{user_results_files_folder_path}/divide/")
+                    except FileExistsError:
+                        pass
+
+                    try:
+                        result = file1.divide(number_of_parts)
+
+                        for i in range(number_of_parts):
+                            part = CSVWizard(f"{file1_filesystem_name}-divided_part_{i + 1}", f"{user_results_files_folder_path}/divide/")
+                            part.overwrite(result[i], file1_encoding)
+
+                        return Response(data={"download_links":"DUMMY_LINKS"}, status=status.HTTP_200_OK)
+                    except Exception as e:
+                        return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
             else:
             # there are two files
                 pass
@@ -110,3 +131,10 @@ class FilesView(generics.GenericAPIView):
         else:
             print("invalid: ", serializer.errors)
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # def get(self, request):
+    #     with open(f"{user_results_files_folder_path}/slice/{file1_filesystem_name}_FIRST_HALF.csv", "rb") as file:
+    #                     response = Response(file.read(), content_type="text/csv")
+    #                     response['Content-Disposition'] = f"attachment; filename={file1_filesystem_name}.csv"
+    #                     return response
