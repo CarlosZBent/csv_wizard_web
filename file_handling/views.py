@@ -141,11 +141,49 @@ class FilesView(generics.GenericAPIView):
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-            else:
+            elif request.data.get("file1_contents") and request.data.get("file2_contents"):
             # there are two files
-                pass
 
-            return Response(status=status.HTTP_201_CREATED)
+                file1 = CSVWizard(file1_filesystem_name, f"./files/{request.user.username}")
+                file1_encoding = file1.get_encoding()
+                file2 = CSVWizard(file2_filesystem_name, f"./files/{request.user.username}")
+                file2_encoding = file2.get_encoding()
+
+                if operation == "find_common_rows":
+                    
+                    try:
+                        os.mkdir(f"{user_results_files_folder_path}/find_common_rows/")
+                    except FileExistsError:
+                        pass
+
+                    try:
+                        result = file1.find_common_rows(file2)
+
+                        common_rows_file = CSVWizard(f"{file1_filesystem_name}-{file2_filesystem_name}_common_rows", f"{user_results_files_folder_path}/find_common_rows/")
+                        common_rows_file.overwrite(result, file1_encoding)
+
+                        return Response(data={"download_link":"DUMMY_LINK"}, status=status.HTTP_200_OK)
+                    except Exception as e:
+                        return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+                elif operation == "find_different_rows":
+                    try:
+                        os.mkdir(f"{user_results_files_folder_path}/find_different_rows/")
+                    except FileExistsError:
+                        pass
+                    
+                    try:
+                        result = file1.find_different_rows(file2)
+
+                        different_rows_file = CSVWizard(f"{file1_filesystem_name}-{file2_filesystem_name}_different_rows", f"{user_results_files_folder_path}/find_different_rows/")
+                        different_rows_file.overwrite(result, file1_encoding)
+                    
+                        return Response(data={"download_link":"DUMMY_LINK"}, status=status.HTTP_200_OK)
+                    except Exception as e:
+                        return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+            # return Response(status=status.HTTP_201_CREATED)
         else:
             print("invalid: ", serializer.errors)
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
