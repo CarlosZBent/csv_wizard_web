@@ -12,9 +12,9 @@ from .models import File
 available_operations = [
     "slice",
     "divide",
-    "delete_blanks"
+    "delete_blanks",
     "find_common_rows",
-    "find_different_rows",
+    "find_different_rows"
 ]
 
 class FilesView(generics.GenericAPIView):
@@ -120,6 +120,24 @@ class FilesView(generics.GenericAPIView):
                             part.overwrite(result[i], file1_encoding)
 
                         return Response(data={"download_links":"DUMMY_LINKS"}, status=status.HTTP_200_OK)
+                    except Exception as e:
+                        return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+                elif operation == "delete_blanks":
+
+                    try:
+                        os.mkdir(f"{user_results_files_folder_path}/delete_blanks/")
+                    except FileExistsError:
+                        pass
+                    
+                    try:
+                        result = file1.delete_blanks()
+
+                        no_blanks_file = CSVWizard(f"{file1_filesystem_name}_no_blanks", f"{user_results_files_folder_path}/delete_blanks/")
+                        no_blanks_file.overwrite(result, file1_encoding)
+
+                        return Response(data={"download_link":"DUMMY_LINK"}, status=status.HTTP_200_OK)
+                        
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

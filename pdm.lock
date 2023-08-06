@@ -15,7 +15,7 @@ summary = "Universal encoding detector for Python 3"
 
 [[package]]
 name = "csv-wizard"
-version = "1.0.0.post1"
+version = "1.0.1"
 requires_python = ">=3.9"
 summary = "Handy extension to Python csv standard library package"
 dependencies = [
@@ -24,7 +24,7 @@ dependencies = [
 
 [[package]]
 name = "django"
-version = "4.2.2"
+version = "4.2.4"
 requires_python = ">=3.8"
 summary = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 dependencies = [
@@ -78,13 +78,13 @@ content_hash = "sha256:319cfa38a76eccdec26c843eae881ee943dd41cb518f50bb9d50424d7
     {url = "https://files.pythonhosted.org/packages/41/32/cdc91dcf83849c7385bf8e2a5693d87376536ed000807fa07f5eab33430d/chardet-5.1.0.tar.gz", hash = "sha256:0d62712b956bc154f85fb0a266e2a3c5913c2967e00348701b32411d6def31e5"},
     {url = "https://files.pythonhosted.org/packages/74/8f/8fc49109009e8d2169d94d72e6b1f4cd45c13d147ba7d6170fb41f22b08f/chardet-5.1.0-py3-none-any.whl", hash = "sha256:362777fb014af596ad31334fde1e8c327dfdb076e1960d1694662d46a6917ab9"},
 ]
-"csv-wizard 1.0.0.post1" = [
-    {url = "https://files.pythonhosted.org/packages/45/60/1ca18d46c2c8ce66c891dea8e0bdebb7ebd284764c3a49a48e300d87367f/csv_wizard-1.0.0.post1-py3-none-any.whl", hash = "sha256:1a0f83fd043060c8dd4e20fadf5d85d2947851143bb3594eb1b4190e1de8f278"},
-    {url = "https://files.pythonhosted.org/packages/da/19/e2c835543c1824e10fa790f8ae94120acd5f902d1098114df72c10bc22ed/csv-wizard-1.0.0.post1.tar.gz", hash = "sha256:e0dd4fbe568274b9f0a1da38ddcd15de96a3da43aaab9466e75f4583830da740"},
+"csv-wizard 1.0.1" = [
+    {url = "https://files.pythonhosted.org/packages/b2/23/11d1b54d66c138f3292c69478b3b1eafbd75959a747cd47d35648d4bd158/csv-wizard-1.0.1.tar.gz", hash = "sha256:9e15d1b3cb142aa17f208b3744fe0a37a46810c63cf99cf8b3ce21105d1a618d"},
+    {url = "https://files.pythonhosted.org/packages/c3/cc/387e156221be459d9cf4c299a5ff57d9cc5e34c473d1b64d953d565c5723/csv_wizard-1.0.1-py3-none-any.whl", hash = "sha256:46e2c8d5a6e1543ed9f67359fcf24f3d99e7421d399356f7934bd4a193b3fbda"},
 ]
-"django 4.2.2" = [
-    {url = "https://files.pythonhosted.org/packages/5c/fa/427fbcac5633f4b88fda7953efb04db903ca7e6d9486afdbda525c4006cc/Django-4.2.2.tar.gz", hash = "sha256:2a6b6fbff5b59dd07bef10bcb019bee2ea97a30b2a656d51346596724324badf"},
-    {url = "https://files.pythonhosted.org/packages/ba/f3/7a66888bda4017198a692887bd566123732783073c1fd424db15358525fd/Django-4.2.2-py3-none-any.whl", hash = "sha256:672b3fa81e1f853bb58be1b51754108ab4ffa12a77c06db86aa8df9ed0c46fe5"},
+"django 4.2.4" = [
+    {url = "https://files.pythonhosted.org/packages/7f/9e/fc6bab255ae10bc57fa2f65646eace3d5405fbb7f5678b90140052d1db0f/Django-4.2.4-py3-none-any.whl", hash = "sha256:860ae6a138a238fc4f22c99b52f3ead982bb4b1aad8c0122bcd8c8a3a02e409d"},
+    {url = "https://files.pythonhosted.org/packages/8d/d2/a4f823741a12089e9ea0f68e1e7d3b6ad5b64e1665fbe9377cd9e1dc09cc/Django-4.2.4.tar.gz", hash = "sha256:7e4225ec065e0f354ccf7349a22d209de09cc1c074832be9eb84c51c1799c432"},
 ]
 "djangorestframework 3.14.0" = [
     {url = "https://files.pythonhosted.org/packages/8e/53/5b2a002c5ebafd60dff1e1945a7d63dee40155830997439a9ba324f0fd50/djangorestframework-3.14.0.tar.gz", hash = "sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8"},
