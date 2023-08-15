@@ -182,15 +182,18 @@ class FilesView(generics.GenericAPIView):
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
-            # return Response(status=status.HTTP_201_CREATED)
         else:
             print("invalid: ", serializer.errors)
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # def get(self, request):
-    #     with open(f"{user_results_files_folder_path}/slice/{file1_filesystem_name}_FIRST_HALF.csv", "rb") as file:
-    #                     response = Response(file.read(), content_type="text/csv")
-    #                     response['Content-Disposition'] = f"attachment; filename={file1_filesystem_name}.csv"
-    #                     return response
+class FileDownloadView(generics.GenericAPIView):
+
+    def get(self, request, operation, filename):
+        try:
+            with open(f"results_files/{request.user.username}/{operation}/{filename}", "rb") as file:
+                response = HttpResponse(file.read(), content_type="text/csv")
+                response['Content-Disposition'] = f"attachment; filename={filename}"
+                return response
+        except FileNotFoundError:
+            return Response(status=status.HTTP_404_NOT_FOUND)
