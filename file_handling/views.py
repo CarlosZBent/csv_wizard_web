@@ -112,6 +112,7 @@ class FilesView(generics.GenericAPIView):
                 elif operation == "divide":
 
                     number_of_parts = int(request.data.get('number_of_parts'))
+                    all_resulting_filenames = []
                     
                     try:
                         os.mkdir(f"{user_results_files_folder_path}/divide/")
@@ -124,8 +125,14 @@ class FilesView(generics.GenericAPIView):
                         for i in range(number_of_parts):
                             part = CSVWizard(f"{file1_filesystem_name}-divided_part_{i + 1}", f"{user_results_files_folder_path}/divide/")
                             part.overwrite(result[i], file1_encoding)
+                            all_resulting_filenames.append(f"{file1_filesystem_name}-divided_part_{i + 1}")
 
-                        return Response(data={"download_links":"DUMMY_LINKS"}, status=status.HTTP_200_OK)
+                        return Response(data={
+                            "operation":"divide",
+                            "number_of_parts": number_of_parts,
+                            "filenames": all_resulting_filenames
+                            }, 
+                            status=status.HTTP_200_OK)
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
