@@ -180,7 +180,13 @@ class FilesView(generics.GenericAPIView):
                         common_rows_file = CSVWizard(f"{file1_filesystem_name}-{file2_filesystem_name}_common_rows", f"{user_results_files_folder_path}/find_common_rows/")
                         common_rows_file.overwrite(result, file1_encoding)
 
-                        return Response(data={"download_link":"DUMMY_LINK"}, status=status.HTTP_200_OK)
+                        return Response(
+                            data={
+                                "operation":"find_common_rows",
+                                "filename":f"{file1_filesystem_name}-{file2_filesystem_name}_common_rows"
+                            }, 
+                            status=status.HTTP_200_OK
+                        )
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -196,7 +202,13 @@ class FilesView(generics.GenericAPIView):
                         different_rows_file = CSVWizard(f"{file1_filesystem_name}-{file2_filesystem_name}_different_rows", f"{user_results_files_folder_path}/find_different_rows/")
                         different_rows_file.overwrite(result, file1_encoding)
                     
-                        return Response(data={"download_link":"DUMMY_LINK"}, status=status.HTTP_200_OK)
+                        return Response(
+                            data={
+                                "operation":"find_different_rows",
+                                "filename": f"{file1_filesystem_name}-{file2_filesystem_name}_different_rows"
+                            }, 
+                            status=status.HTTP_200_OK
+                        )
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -211,7 +223,7 @@ class FileDownloadView(generics.GenericAPIView):
         try:
             with open(f"results_files/{request.user.username}/{operation}/{filename}.csv", "rb") as file:
                 response = HttpResponse(file.read(), content_type="text/csv")
-                response['Content-Disposition'] = f"attachment; filename={filename}"
+                response['Content-Disposition'] = f"attachment; filename={filename}.csv"
                 return response
         except FileNotFoundError:
             return Response(status=status.HTTP_404_NOT_FOUND)
