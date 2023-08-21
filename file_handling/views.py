@@ -105,7 +105,8 @@ class FilesView(generics.GenericAPIView):
                                 "first_half": f"{file1_filesystem_name}_FIRST_HALF",
                                 "second_half": f"{file1_filesystem_name}_SECOND_HALF"
                             }}, 
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_200_OK
+                        )
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -132,7 +133,8 @@ class FilesView(generics.GenericAPIView):
                             "number_of_parts": number_of_parts,
                             "filenames": all_resulting_filenames
                             }, 
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_200_OK
+                        )
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -149,7 +151,10 @@ class FilesView(generics.GenericAPIView):
                         no_blanks_file = CSVWizard(f"{file1_filesystem_name}_no_blanks", f"{user_results_files_folder_path}/delete_blanks/")
                         no_blanks_file.overwrite(result, file1_encoding)
 
-                        return Response(data={"download_link":"DUMMY_LINK"}, status=status.HTTP_200_OK)
+                        return Response(
+                            data={"operation":"delete_blanks", "filename":f"{file1_filesystem_name}_no_blanks"}, 
+                            status=status.HTTP_200_OK
+                        )
                         
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
