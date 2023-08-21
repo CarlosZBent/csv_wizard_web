@@ -83,6 +83,7 @@ class FilesView(generics.GenericAPIView):
 
                 file1 = CSVWizard(file1_filesystem_name, f"./files/{request.user.username}")
                 file1_encoding = file1.get_encoding()
+                file1_headers = file1.get_headers()
                 
                 if operation == "slice":
                     try:
@@ -97,7 +98,9 @@ class FilesView(generics.GenericAPIView):
                         second_half = CSVWizard(f"{file1_filesystem_name}_SECOND_HALF", f"{user_results_files_folder_path}/slice")
                         
                         first_half.overwrite(result['First_Half'], file1_encoding)
+                        first_half.write_headers(file1_headers)
                         second_half.overwrite(result['Second_Half'], file1_encoding)
+                        second_half.write_headers(file1_headers)
 
                         return Response(data={
                             "operation": "slice", 
@@ -126,6 +129,7 @@ class FilesView(generics.GenericAPIView):
                         for i in range(number_of_parts):
                             part = CSVWizard(f"{file1_filesystem_name}-divided_part_{i + 1}", f"{user_results_files_folder_path}/divide/")
                             part.overwrite(result[i], file1_encoding)
+                            part.write_headers(file1_headers)
                             all_resulting_filenames.append(f"{file1_filesystem_name}-divided_part_{i + 1}")
 
                         return Response(data={
@@ -150,6 +154,7 @@ class FilesView(generics.GenericAPIView):
 
                         no_blanks_file = CSVWizard(f"{file1_filesystem_name}_no_blanks", f"{user_results_files_folder_path}/delete_blanks/")
                         no_blanks_file.overwrite(result, file1_encoding)
+                        no_blanks_file.write_headers(file1_headers)
 
                         return Response(
                             data={"operation":"delete_blanks", "filename":f"{file1_filesystem_name}_no_blanks"}, 
@@ -164,8 +169,8 @@ class FilesView(generics.GenericAPIView):
 
                 file1 = CSVWizard(file1_filesystem_name, f"./files/{request.user.username}")
                 file1_encoding = file1.get_encoding()
+                file1_headers = file1.get_headers()
                 file2 = CSVWizard(file2_filesystem_name, f"./files/{request.user.username}")
-                file2_encoding = file2.get_encoding()
 
                 if operation == "find_common_rows":
                     
@@ -179,6 +184,7 @@ class FilesView(generics.GenericAPIView):
 
                         common_rows_file = CSVWizard(f"{file1_filesystem_name}-{file2_filesystem_name}_common_rows", f"{user_results_files_folder_path}/find_common_rows/")
                         common_rows_file.overwrite(result, file1_encoding)
+                        common_rows_file.write_headers(file1_headers)
 
                         return Response(
                             data={
@@ -201,6 +207,7 @@ class FilesView(generics.GenericAPIView):
 
                         different_rows_file = CSVWizard(f"{file1_filesystem_name}-{file2_filesystem_name}_different_rows", f"{user_results_files_folder_path}/find_different_rows/")
                         different_rows_file.overwrite(result, file1_encoding)
+                        different_rows_file.write_headers(file1_headers)
                     
                         return Response(
                             data={
