@@ -99,7 +99,13 @@ class FilesView(generics.GenericAPIView):
                         first_half.overwrite(result['First_Half'], file1_encoding)
                         second_half.overwrite(result['Second_Half'], file1_encoding)
 
-                        return Response(data={"download_links": "DUMMY_LINK"}, status=status.HTTP_200_OK)
+                        return Response(data={
+                            "operation": "slice", 
+                            "filename": {
+                                "first_half": f"{file1_filesystem_name}_FIRST_HALF",
+                                "second_half": f"{file1_filesystem_name}_SECOND_HALF"
+                            }}, 
+                            status=status.HTTP_200_OK)
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -191,7 +197,7 @@ class FileDownloadView(generics.GenericAPIView):
 
     def get(self, request, operation, filename):
         try:
-            with open(f"results_files/{request.user.username}/{operation}/{filename}", "rb") as file:
+            with open(f"results_files/{request.user.username}/{operation}/{filename}.csv", "rb") as file:
                 response = HttpResponse(file.read(), content_type="text/csv")
                 response['Content-Disposition'] = f"attachment; filename={filename}"
                 return response
