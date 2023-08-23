@@ -77,9 +77,11 @@ class FilesView(generics.GenericAPIView):
             if request.data.get('file2_contents'):
                 file2_filesystem_name = f"{request.data.get('file2_contents').name[:-4]}-{request.user.username}"
 
+            is_file1_only_request = request.data.get("file1_contents") and not request.data.get("file2_contents")
+            is_two_files_request = request.data.get("file1_contents") and request.data.get("file2_contents")
+
             # process CSV files
-            if request.data.get("file1_contents") and not request.data.get("file2_contents"):
-            # only file 1 exists
+            if is_file1_only_request:
 
                 file1 = CSVWizard(file1_filesystem_name, f"./files/{request.user.username}")
                 file1_encoding = file1.get_encoding()
@@ -164,8 +166,7 @@ class FilesView(generics.GenericAPIView):
                     except Exception as e:
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-            elif request.data.get("file1_contents") and request.data.get("file2_contents"):
-            # there are two files
+            elif is_two_files_request:
 
                 file1 = CSVWizard(file1_filesystem_name, f"./files/{request.user.username}")
                 file1_encoding = file1.get_encoding()
@@ -220,7 +221,6 @@ class FilesView(generics.GenericAPIView):
                         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            print("invalid: ", serializer.errors)
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 

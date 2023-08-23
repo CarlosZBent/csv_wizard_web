@@ -22,13 +22,11 @@ class UserCreationSerializer(serializers.ModelSerializer):
             username_exists = User.objects.filter(username=attrs.get('username')).exists()
 
             if username_exists:
-                print('username already exists')
                 raise ValidationError(detail='username already exists')
 
             email_exists = User.objects.filter(username=attrs.get('email')).exists()
 
             if email_exists:
-                print('email already exists')
                 raise ValidationError(detail='email already exists')
 
 
@@ -73,8 +71,7 @@ class LoginSerializer(serializers.Serializer):
 
         if username and password:
             user = User.objects.filter(username=username).first()
-            print("user:", user)
-            print("authenticate:", authenticate(self.context.get("request"), username=username, password=password))
+            authenticate(self.context.get("request"), username=username, password=password)
             
             if not user:
                 msg = 'Access denied: wrong username or password.'
