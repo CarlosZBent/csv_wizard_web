@@ -46,6 +46,7 @@ class FilesView(generics.GenericAPIView):
                 user=request.user,
                 size=request.data.get("file1_contents").size,
                 name=request.data.get("file1_contents").name,
+                operation_name=request.data.get("operation_name"),
                 is_deleted=False,
             )
             file_entry.save()
